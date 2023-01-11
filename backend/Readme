@@ -1,0 +1,5 @@
+1. Deploy the chainstackDollar.sol using the bridge_wallet Address(owner address) pass name symbol and initial supply to this.
+
+2. Then Deploy Dchainstackdollar.sol pass the bridge_wallet(owner address) of chainstackDollar (please do not pass the instance of chainstackDollar instance into this).
+
+3. call the mint tokens function in Dchainstack pass bridge_wallet address and amount in it.
