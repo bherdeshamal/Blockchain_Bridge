@@ -1,6 +1,9 @@
 const Web3 = require("web3");
+const ChainstackDollars = require("../ABI/ChainstackDollars.json");
 const DChainStackDollars = require("../ABI/DChainStackDollars.json");
 const HDWalletProvider = require("@truffle/hdwallet-provider");
+const ChainstackDollarsABI = ChainstackDollars.abi;
+const ChainstackDollarsAddress = ChainstackDollars.address;
 const DchainstackDollarsABI = DChainStackDollars.abi;
 const DchainstackDollarsAddress = DChainStackDollars.address;
 const BRIDGE_WALLET = process.env.BRIDGE_WALLET;
@@ -18,6 +21,11 @@ if (typeof web3 !== "undefined") {
 }
 
 web3.eth.handleRevert = true;
+
+const chainContract = new web3.eth.Contract(
+  ChainstackDollarsABI,
+  ChainstackDollarsAddress
+);
 
 const contract = new web3.eth.Contract(
   DchainstackDollarsABI,
@@ -117,6 +125,45 @@ module.exports.burnTokens = async (request, response) => {
       `transferToEthWallet > You can see this transaction in ${process.env.DESTINATION_EXPLORER}${receipt.transactionHash}`
     );
     response.json("Token Burn successfully");
+  } catch (error) {
+    response.status(500).send(error.reason);
+  }
+};
+
+module.exports.ApproveOrigin = async (request, response) => {
+  const amount = request.body.amount;
+  const address = ORIGIN_TOKEN_CONTRACT_ADDRESS;
+
+  try {
+    const receipt = await chainContract.methods
+      .approve(address, Web3.utils.toWei(amount.toString()))
+      .send({ from: BRIDGE_WALLET, gas: 3000000 });
+
+    console.log(`Transaction sent, hash is ${receipt.transactionHash}`);
+    console.log(
+      `mintTokens > You can see this transaction in ${process.env.ORIGIN_EXPLORER}${receipt.transactionHash}`
+    );
+
+    response.json("Tokens Approve Successfully");
+  } catch (error) {
+    response.status(500).send(error.message);
+  }
+};
+
+module.exports.transferTokenOnOrigin = async (request, response) => {
+  const amount = request.body.amount;
+  const address = ORIGIN_TOKEN_CONTRACT_ADDRESS;
+
+  try {
+    const receipt = await chainContract.methods
+      .transfer(Web3.utils.toWei(amount.toString()), address)
+      .send({ from: BRIDGE_WALLET, gas: 3000000 });
+
+    console.log(`Transaction sent, hash is ${receipt.transactionHash}`);
+    console.log(
+      `transferToEthWallet > You can see this transaction in ${process.env.ORIGIN_EXPLORER}${receipt.transactionHash}`
+    );
+    response.json("Token transfer from user to admin successfully");
   } catch (error) {
     response.status(500).send(error.reason);
   }

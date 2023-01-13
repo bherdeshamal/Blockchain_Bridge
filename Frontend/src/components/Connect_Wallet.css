@@ -1,0 +1,12 @@
+/*  src/Connect_wallet.css  */
+.Connect_Wallet {
+  box-sizing: border-box;
+  width: 100%;
+  display: flex;
+  justify-content: right;
+  align-items: baseline;
+  padding: 1em;
+  margin-bottom: 1em;
+  background-color: rgb(26, 70, 192);
+  color: #fff;
+}
